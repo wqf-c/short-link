@@ -1,0 +1,6 @@
+mysql:
+  url: root:123456@tcp(localhost:3306)/short-link
+
+server:
+  ip: 127.0.0.1
+  port: 8080
