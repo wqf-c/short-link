@@ -52,7 +52,9 @@ func GetLongLinkBySLink(shortLink string) (*model.Link, error) {
 			freq := utils.VisitUrl(shortLink)
 			if freq >= 5 {
 				redisErr := utils.RedisSet(shortLink, link.LongLink, 0)
-				fmt.Println("RedisSet error:", redisErr)
+				if redisErr != nil {
+					fmt.Println("RedisSet error:", redisErr)
+				}
 			}
 			return &link, nil
 		} else {
