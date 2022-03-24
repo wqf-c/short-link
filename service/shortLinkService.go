@@ -46,6 +46,7 @@ func GetLongLinkBySLink(shortLink string) (*model.Link, error) {
 		return &link, nil
 	} else {
 		link := model.Link{ShortLink: shortLink}
+
 		err = linkDao.SelectByShortLink(&link)
 		if err == nil {
 			freq := utils.VisitUrl(shortLink)
