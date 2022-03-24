@@ -46,12 +46,15 @@ func GetLongLinkBySLink(shortLink string) (*model.Link, error) {
 		return &link, nil
 	} else {
 		link := model.Link{ShortLink: shortLink}
+
 		err = linkDao.SelectByShortLink(&link)
 		if err == nil {
 			freq := utils.VisitUrl(shortLink)
 			if freq >= 5 {
 				redisErr := utils.RedisSet(shortLink, link.LongLink, 0)
-				fmt.Println("RedisSet error:", redisErr)
+				if redisErr != nil {
+					fmt.Println("RedisSet error:", redisErr)
+				}
 			}
 			return &link, nil
 		} else {
