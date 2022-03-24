@@ -38,7 +38,7 @@ func main() {
 				"message": err.Error(),
 			})
 		} else {
-			c.Redirect(http.StatusMovedPermanently, link.LongLink)
+			c.Redirect(http.StatusSeeOther, link.LongLink)
 		}
 
 	})

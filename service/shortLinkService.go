@@ -2,10 +2,12 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
 	linkDao "short-link/dao"
 	"short-link/model"
+	"short-link/utils"
 )
 
 func GetShortLink(url string) (string, error) {
@@ -36,11 +38,25 @@ func GetLongLinkBySLink(shortLink string) (*model.Link, error) {
 	if len(shortLink) == 0 {
 		return nil, errors.New("empty shortLink")
 	}
-	link := model.Link{ShortLink: shortLink}
-	err := linkDao.SelectByShortLink(&link)
-	if err != nil {
-		return nil, err
-	} else {
+	//先查redis
+	longLink, err := utils.RedisGet(shortLink)
+	if err == nil {
+		link := model.Link{ShortLink: shortLink, LongLink: longLink}
+		fmt.Println("redis hit shortLink:", shortLink)
 		return &link, nil
+	} else {
+		link := model.Link{ShortLink: shortLink}
+		err = linkDao.SelectByShortLink(&link)
+		if err == nil {
+			freq := utils.VisitUrl(shortLink)
+			if freq >= 5 {
+				redisErr := utils.RedisSet(shortLink, link.LongLink, 0)
+				fmt.Println("RedisSet error:", redisErr)
+			}
+			return &link, nil
+		} else {
+			return nil, err
+		}
 	}
+
 }

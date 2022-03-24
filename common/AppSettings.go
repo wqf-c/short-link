@@ -2,7 +2,6 @@ package common
 
 import (
 	"gopkg.in/yaml.v2"
-	"gorm.io/gorm"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,9 +16,15 @@ type Server struct {
 	Port string `yaml:"port"`
 }
 
+type Redis struct {
+	Ip   string `yaml:"ip"`
+	Port string `yaml:"port"`
+}
+
 type BaseInfo struct {
 	Mysql  Mysql  `yaml:"mysql"`
 	Server Server `yaml:"server"`
+	Redis  Redis  `yaml:"redis"`
 }
 
 var (
@@ -41,8 +46,3 @@ func init() {
 		panic(err.Error())
 	}
 }
-
-var (
-	Db  *gorm.DB
-	err error
-)
